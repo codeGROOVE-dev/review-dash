@@ -615,38 +615,16 @@ export const User = (() => {
         },
       });
 
-      // Create user name with optional @org - XSS-safe (textContent)
+      // Create user name - XSS-safe (textContent)
       const userName = el("span", {
         className: "user-name",
-      });
-
-      // Add username
-      const usernameSpan = el("span", {
-        className: "username-main",
         text: state.currentUser.login,
       });
-      userName.appendChild(usernameSpan);
 
-      // Add @org if viewing an organization workspace
+      // Check membership and show banner if in org workspace and not a member
       if (currentWorkspace) {
-        const orgSpan = el("span", {
-          className: "username-org",
-          text: `@${currentWorkspace}`,
-        });
-        userName.appendChild(orgSpan);
-
-        // Add red asterisk if user is not a member of this org
         const isMember = isUserMemberOfOrg(currentWorkspace);
         if (!isMember) {
-          const asterisk = el("span", {
-            className: "username-org-non-member",
-            text: "*",
-            attrs: {
-              title: "You are not a member of this organization",
-            },
-          });
-          userName.appendChild(asterisk);
-
           // Show banner if not a member
           if (footerBanner && notificationText) {
             footerBanner.classList.add("visible");
@@ -682,7 +660,7 @@ export const User = (() => {
         },
       });
 
-      // Create viewing label with username and optional @org - XSS-safe (textContent)
+      // Create viewing label with username - XSS-safe (textContent)
       const userName = el("span", {
         className: "user-name",
       });
@@ -695,16 +673,6 @@ export const User = (() => {
         text: viewingUser.login,
       });
       userName.appendChild(usernameSpan);
-
-      // Add @org if viewing an organization workspace
-      if (currentWorkspace) {
-        const orgSpan = el("span", {
-          className: "username-org",
-          text: `@${currentWorkspace}`,
-        });
-        userName.appendChild(orgSpan);
-        // Don't show membership info when not logged in - we don't know yet
-      }
 
       // Create login button - XSS-safe
       const loginBtn = el("button", {
