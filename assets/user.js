@@ -670,6 +670,7 @@ export const User = (() => {
       userInfo.appendChild(userName);
       userInfo.appendChild(logoutBtn);
     } else if (viewingUser) {
+      // Not logged in, viewing another user's page
       // Create avatar - XSS-safe
       const avatar = el("img", {
         className: "user-avatar",
@@ -702,29 +703,7 @@ export const User = (() => {
           text: `@${currentWorkspace}`,
         });
         userName.appendChild(orgSpan);
-
-        // Add red asterisk if user is not a member of this org
-        const isMember = isUserMemberOfOrg(currentWorkspace);
-        if (!isMember) {
-          const asterisk = el("span", {
-            className: "username-org-non-member",
-            text: "*",
-            attrs: {
-              title: "You are not a member of this organization",
-            },
-          });
-          userName.appendChild(asterisk);
-
-          // Show banner if not a member
-          if (footerBanner && notificationText) {
-            footerBanner.classList.add("visible");
-            clearChildren(notificationText);
-            const message = el("span", {
-              text: `You are not a member of ${currentWorkspace}, but that's OK, we can't show you anything you don't have permission to`,
-            });
-            notificationText.appendChild(message);
-          }
-        }
+        // Don't show membership info when not logged in - we don't know yet
       }
 
       // Create login button - XSS-safe
