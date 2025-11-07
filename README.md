@@ -76,7 +76,3 @@ When using the Go server:
 ├── assets/          # CSS, JS, demo data  
 └── go.mod           # Go module file
 ```
-
-## License
-
-MIT
