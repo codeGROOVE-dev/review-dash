@@ -34,6 +34,8 @@ export const Workspace = (() => {
   };
 
   // Get hidden orgs for current workspace
+  // IMPORTANT: Hidden orgs list is per-workspace (each workspace has its own preferences)
+  // This allows different filtering preferences for personal vs each org workspace
   const hiddenOrgs = () => {
     const workspace = currentWorkspace() || "personal";
     const cookieName = `hidden_orgs_${workspace}`;
@@ -50,6 +52,9 @@ export const Workspace = (() => {
   };
 
   // Set hidden orgs for current workspace
+  // IMPORTANT: Each workspace maintains its own separate hidden orgs list
+  // Domain cookies allow preferences to persist across page loads, but each
+  // workspace (personal, org1, org2, etc.) has independent preferences
   const setHiddenOrgs = (orgs) => {
     const workspace = currentWorkspace() || "personal";
     const cookieName = `hidden_orgs_${workspace}`;
@@ -69,10 +74,12 @@ export const Workspace = (() => {
       return;
     }
 
-    // Set cookie with path scope for 1 year
+    // Set cookie with domain scope for 1 year (works across all subdomains)
     const expires = new Date();
     expires.setTime(expires.getTime() + 365 * 24 * 60 * 60 * 1000);
-    document.cookie = `${cookieName}=${cookieValue};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+    const isSecure = window.location.protocol === "https:";
+    const securePart = isSecure ? ";Secure" : "";
+    document.cookie = `${cookieName}=${cookieValue};expires=${expires.toUTCString()};path=/;domain=.${BASE_DOMAIN};SameSite=Lax${securePart}`;
   };
 
   // Toggle org visibility
