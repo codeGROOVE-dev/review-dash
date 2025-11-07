@@ -380,7 +380,10 @@ const App = (() => {
   const setCookie = (name, value, days) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+    // Use domain cookie for cross-subdomain persistence
+    const isSecure = window.location.protocol === "https:";
+    const securePart = isSecure ? ";Secure" : "";
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax${securePart}`;
   };
 
   const handlePRAction = async (action, prId) => {

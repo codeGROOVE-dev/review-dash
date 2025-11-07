@@ -1049,8 +1049,9 @@ export const User = (() => {
 
     // Get workspace-specific settings
     const hiddenOrgs = Workspace.hiddenOrgs();
-    const hideStale =
-      getCookie(`globalFilterStale_${Workspace.currentWorkspace() || "personal"}`) === "true";
+    // Default to true (hide stale PRs by default)
+    const staleCookie = getCookie(`globalFilterStale_${Workspace.currentWorkspace() || "personal"}`);
+    const hideStale = staleCookie === null ? true : staleCookie === "true";
 
     // Update UI if checkboxes exist
     const staleCheckbox = $("globalFilterStale");
@@ -1309,7 +1310,10 @@ export const User = (() => {
       return;
     }
 
-    const hideStale = getCookie(`${section}FilterStale`) === "true";
+    // Default to true (hide stale PRs by default)
+    // Use workspace-specific cookie name
+    const staleCookie = getCookie(`globalFilterStale_${Workspace.currentWorkspace() || "personal"}`);
+    const hideStale = staleCookie === null ? true : staleCookie === "true";
     const shouldHide = hideStale && isStale(pr);
 
     if (shouldHide) {
