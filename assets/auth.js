@@ -18,8 +18,8 @@ export const Auth = (() => {
   const CONFIG = {
     CLIENT_ID: "Iv23liYmAKkBpvhHAnQQ",
     API_BASE: "https://api.github.com",
-    STORAGE_KEY: "github_token",
-    COOKIE_KEY: "github_pat",
+    STORAGE_KEY: "github_token", // Legacy localStorage key (fallback)
+    COOKIE_KEY: "github_token", // Store all tokens in cookies for cross-subdomain support
     OAUTH_REDIRECT_URI: "https://auth.ready-to-review.dev/oauth/callback",
   };
 
@@ -27,7 +27,11 @@ export const Auth = (() => {
   function setCookie(name, value, days) {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+    // Use domain cookie to share across all subdomains of ready-to-review.dev
+    // SameSite=Lax allows cookies to be sent on top-level navigation (OAuth redirects)
+    const isSecure = window.location.protocol === "https:";
+    const securePart = isSecure ? ";Secure" : "";
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax${securePart}`;
   }
 
   function getCookie(name) {
@@ -42,36 +46,39 @@ export const Auth = (() => {
   }
 
   function deleteCookie(name) {
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+    // Must match the domain used in setCookie to properly delete
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.ready-to-review.dev;`;
   }
 
   const getStoredToken = () => {
-    // Check localStorage for OAuth token
-    const localToken = localStorage.getItem(CONFIG.STORAGE_KEY);
-    if (localToken) return localToken;
-
-    // Check for PAT (user-entered token, stored in non-HttpOnly cookie)
+    // Always check cookie first (works across subdomains)
     const cookieToken = getCookie(CONFIG.COOKIE_KEY);
     if (cookieToken) return cookieToken;
+
+    // Fallback to localStorage for legacy tokens, then migrate to cookie
+    const localToken = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (localToken) {
+      console.log("[Auth] Migrating token from localStorage to cookie for cross-subdomain support");
+      setCookie(CONFIG.COOKIE_KEY, localToken, 10);
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+      return localToken;
+    }
 
     return null;
   };
 
-  const storeToken = (token, useCookie = false) => {
-    if (useCookie) {
-      // For PAT, store in cookie
-      setCookie(CONFIG.COOKIE_KEY, token, 365); // 1 year
-    } else {
-      // For OAuth, store in localStorage
-      localStorage.setItem(CONFIG.STORAGE_KEY, token);
-    }
+  const storeToken = (token) => {
+    // Always store in cookie for cross-subdomain support (10 days)
+    setCookie(CONFIG.COOKIE_KEY, token, 10);
+    // Clean up any legacy localStorage token
+    localStorage.removeItem(CONFIG.STORAGE_KEY);
   };
 
   const clearToken = () => {
-    // Clear localStorage
-    localStorage.removeItem(CONFIG.STORAGE_KEY);
-    // Clear PAT cookie
+    // Clear cookie (primary storage)
     deleteCookie(CONFIG.COOKIE_KEY);
+    // Clear localStorage (legacy)
+    localStorage.removeItem(CONFIG.STORAGE_KEY);
   };
 
   const initiateOAuthLogin = () => {
@@ -189,7 +196,7 @@ export const Auth = (() => {
       });
 
       if (response.ok) {
-        storeToken(token, true); // Store in cookie
+        storeToken(token); // Store in cookie
         closePATModal();
         window.location.reload();
       } else {
