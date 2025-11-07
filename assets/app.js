@@ -875,35 +875,29 @@ const App = (() => {
         !urlContext.isSettings &&
         !urlContext.isNotifications
       ) {
-        // Only load PRs for actual user PR dashboard pages
+        // User trying to access a user dashboard without auth - require login
         try {
           // Skip API call if it's the demo user
           if (urlContext.username === "demo") {
             showLoginPrompt();
             return;
           }
+          // Load the viewing user's basic info to show in UI
           state.viewingUser = await githubAPI(`/users/${urlContext.username}`);
-
-          showLoginPrompt();
           User.updateUserDisplay(state, initiateLogin, logout);
-
-          // Load public data
-          await User.updateOrgFilter(state, parseURL, githubAPI);
-          showMainContentWithLoading();
-          await User.loadPullRequests(state, githubAPI, state.isDemoMode);
-          // Update org filter again after PRs are loaded to include PR organizations
-          await User.updateOrgFilter(state, parseURL, githubAPI);
         } catch (error) {
           console.error("Failed to load user:", error);
           const errorMessage = error.message.includes("rate limit")
             ? "GitHub API rate limit exceeded. Please try again later or login for higher limits."
             : `Failed to load user ${urlContext.username}`;
           showToast(errorMessage, "error");
-          showLoginPrompt();
         }
-      } else {
+        // Show login prompt - user must authenticate to view PRs
         showLoginPrompt();
+        return;
       }
+      // Default: show login prompt
+      showLoginPrompt();
       return;
     }
 
