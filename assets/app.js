@@ -13,7 +13,7 @@ const App = (() => {
   const state = {
     currentUser: null,
     viewingUser: null,
-    accessToken: Auth.getStoredToken(),
+    accessToken: null, // Will be loaded async in init()
     organizations: [],
     pullRequests: {
       incoming: [],
@@ -425,11 +425,28 @@ const App = (() => {
   // Load current user
   const loadCurrentUser = async () => {
     state.currentUser = await Auth.loadCurrentUser();
-    // Store username in cookie for workspace module
+    // Store username and login timestamp in cookies
     if (state.currentUser && state.currentUser.login) {
-      setCookie("username", state.currentUser.login, 365);
+      // Only set if not already set (preserve original timestamp)
+      const existingUsername = getCookie("username");
+      if (!existingUsername) {
+        const timestamp = Date.now().toString();
+        setCookie("username", state.currentUser.login, 365);
+        setCookie("login_ts", timestamp, 365);
+      }
     }
   };
+
+  function getCookie(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
 
   // GitHub API wrapper that uses Auth module
   const githubAPI = async (endpoint, options = {}) => {
@@ -647,6 +664,9 @@ const App = (() => {
 
   // Initialize
   const init = async () => {
+    // Load access token first (async now due to encryption)
+    state.accessToken = await Auth.getStoredToken();
+
     const urlParams = new URLSearchParams(window.location.search);
     const demo = urlParams.get("demo");
     const urlContext = parseURL();
@@ -684,7 +704,7 @@ const App = (() => {
     // Handle changelog page routing
     if (urlContext && urlContext.isChangelog) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (token) {
         try {
           await loadCurrentUser();
@@ -728,7 +748,7 @@ const App = (() => {
     const path = window.location.pathname;
     if (path === "/notifications" || path.match(/^\/notifications\/gh\/[^/]+$/)) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (token) {
         try {
           await loadCurrentUser();
@@ -745,7 +765,7 @@ const App = (() => {
     // Handle robots page routing
     if (path === "/robots" || path.match(/^\/robots\/gh\/[^/]+$/)) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (!token) {
         showToast("Please login to configure Robot Army", "error");
         window.location.href = "/";
@@ -862,7 +882,7 @@ const App = (() => {
     const authCodeExchanged = await Auth.handleAuthCodeCallback();
 
     // Re-check for authentication token (it might have been set after module load or auth code exchange)
-    state.accessToken = Auth.getStoredToken();
+    state.accessToken = await Auth.getStoredToken();
     console.log("[App.init] Checked for access token:", state.accessToken ? "found" : "not found");
 
     // If we just exchanged an auth code successfully, reload to start with fresh state

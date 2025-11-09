@@ -9,10 +9,38 @@ make test
 Or directly with Node.js:
 
 ```bash
-node --test assets/workspace.test.js
+node --test assets/workspace.test.js assets/crypto.test.js
 ```
 
 ## Test Coverage
+
+### `integration.test.js`
+Integration tests for app initialization and token handling:
+
+- **State initialization**: Validates null/undefined/non-string token handling
+  - Handles null accessToken gracefully (prevents TypeError)
+  - Detects PAT token type (ghp_ prefix)
+  - Detects OAuth token type (gho_ prefix)
+  - Handles undefined, empty string, and non-string tokens
+  - Validates OAuth warning check at user.js:325 (regression test)
+
+- **Async token loading**: Validates async token decryption flow
+  - Initializes with null token before async load completes
+  - Successfully sets token after async decryption
+
+### `crypto.test.js`
+Tests for the crypto module (`assets/crypto.js`):
+
+- **encryptToken() and decryptToken()**: Validates encryption/decryption
+  - Successfully encrypts and decrypts tokens
+  - Produces different ciphertext for same token (random IV)
+  - Fails to decrypt with wrong username
+  - Fails to decrypt with wrong domain
+  - Fails to decrypt with wrong timestamp
+  - Handles various GitHub token formats (PAT, OAuth, fine-grained)
+  - Requires all parameters for encryption/decryption
+  - Handles realistic login scenarios
+  - Different timestamps produce different encryption keys
 
 ### `workspace.test.js`
 Tests for the workspace module (`assets/workspace.js`):

@@ -4,7 +4,7 @@ deploy:
 
 .PHONY: test
 test:
-	node --test assets/workspace.test.js
+	node --test assets/workspace.test.js assets/crypto.test.js assets/integration.test.js
 
 
 # BEGIN: lint-install .

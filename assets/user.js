@@ -289,7 +289,7 @@ export const User = (() => {
     console.log(`  1. https://github.com/search?q=${encodeURIComponent(query1)}&type=pullrequests`);
     console.log(`  2. https://github.com/search?q=${encodeURIComponent(query2)}&type=pullrequests`);
     console.log(
-      `Auth: ${state.accessToken ? (state.accessToken.startsWith("ghp_") ? "PAT" : "OAuth") : "none"}`
+      `Auth: ${state.accessToken && typeof state.accessToken === "string" ? (state.accessToken.startsWith("ghp_") ? "PAT" : "OAuth") : "none"}`
     );
 
     const [response1, response2] = await Promise.all([
@@ -322,7 +322,7 @@ export const User = (() => {
     if (prCountLoadedContainer && allPRs.length > 0) show(prCountLoadedContainer);
 
     const totalCount = response1.total_count + response2.total_count;
-    if (state.accessToken && !state.accessToken.startsWith("ghp_") && totalCount > allPRs.length) {
+    if (state.accessToken && typeof state.accessToken === "string" && !state.accessToken.startsWith("ghp_") && totalCount > allPRs.length) {
       console.info(`OAuth Apps may not show all PRs. Consider using a Personal Access Token.`);
     }
 
