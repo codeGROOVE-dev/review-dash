@@ -996,8 +996,7 @@ export const User = (() => {
         const newHiddenOrgs = Workspace.hiddenOrgs();
         console.log("[populateOrgFilters] After toggle, hidden orgs:", newHiddenOrgs);
 
-        // Refresh the menu and PR sections
-        populateOrgFilters(state);
+        // Refresh PR sections (which also refreshes the menu)
         updatePRSections(state);
       });
     });

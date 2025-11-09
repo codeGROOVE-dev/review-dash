@@ -425,6 +425,10 @@ const App = (() => {
   // Load current user
   const loadCurrentUser = async () => {
     state.currentUser = await Auth.loadCurrentUser();
+    // Store username in cookie for workspace module
+    if (state.currentUser && state.currentUser.login) {
+      setCookie("username", state.currentUser.login, 365);
+    }
   };
 
   // GitHub API wrapper that uses Auth module
@@ -908,6 +912,9 @@ const App = (() => {
     try {
       updateSearchInputVisibility();
       await loadCurrentUser();
+
+      // Initialize workspace defaults after user is loaded
+      Workspace.initializeDefaults();
 
       // If at root URL, redirect to user's page
       if (!urlContext && state.currentUser) {
