@@ -525,9 +525,6 @@ export const User = (() => {
         tags.push("blocked on you");
 
         const action = nextAction[currentUser.login];
-        if (action.kind === "review" || action.kind === "re_review") {
-          tags.push("needs-review");
-        }
         if (action.kind === "fix_tests" || action.kind === "rerun_tests") {
           tags.push("needs-fixes", "tests_failing");
         }
@@ -1145,37 +1142,67 @@ export const User = (() => {
       return "";
     }
 
-    const waitingList = usernames
-      .map((username) => {
-        const action = nextAction[username];
-        const isViewingUser = viewingUser && username === viewingUser.login;
-        const isCurrentUser = currentUser && username === currentUser.login;
+    // Group actions by kind
+    const actionsByKind = {};
+    usernames.forEach((username) => {
+      const action = nextAction[username];
+      const kind = action.kind || "action";
 
-        let displayName = username;
-        let className = "pr-waiting-on-user";
+      if (!actionsByKind[kind]) {
+        actionsByKind[kind] = [];
+      }
 
-        // If viewing someone else's dashboard, highlight their name
-        if (viewingUser && currentUser && viewingUser.login !== currentUser.login) {
-          if (isViewingUser) {
-            displayName = viewingUser.login;
-            // Use red for incoming PRs, green for outgoing
-            className = isIncomingPR ? "pr-waiting-on-you" : "pr-waiting-on-you-green";
-          }
-        } else {
-          // Normal behavior when viewing your own dashboard
-          if (isCurrentUser) {
-            displayName = "YOU";
-            className = "pr-waiting-on-you";
-          }
+      const isViewingUser = viewingUser && username === viewingUser.login;
+      const isCurrentUser = currentUser && username === currentUser.login;
+
+      let displayName = username;
+      let className = "pr-action-user";
+
+      // Special handling for _system
+      if (username === "_system") {
+        // Skip adding _system to the user list, we'll just show the action name
+        return;
+      }
+
+      // If viewing someone else's dashboard, highlight their name
+      if (viewingUser && currentUser && viewingUser.login !== currentUser.login) {
+        if (isViewingUser) {
+          displayName = viewingUser.login;
+          className = "pr-action-you";
+        }
+      } else {
+        // Normal behavior when viewing your own dashboard
+        if (isCurrentUser) {
+          displayName = "YOU";
+          className = "pr-action-you";
+        }
+      }
+
+      const title = action.reason || "Waiting for action";
+      actionsByKind[kind].push({
+        html: `<span class="${className}" title="${escapeHtml(title)}">${escapeHtml(displayName)}</span>`,
+        isYou: isCurrentUser || isViewingUser
+      });
+    });
+
+    // Build the action groups string
+    const actionGroups = Object.entries(actionsByKind)
+      .map(([kind, users]) => {
+        // Format action kind (replace underscores with spaces)
+        const actionName = kind.replace(/_/g, " ");
+
+        if (users.length === 0) {
+          // _system action with no users
+          return actionName;
         }
 
-        const title = action.reason || "Waiting for action";
-
-        return `<span class="${className}" title="${escapeHtml(title)}">${escapeHtml(displayName)}</span>`;
+        // Join user names
+        const userList = users.map(u => u.html).join(", ");
+        return `${actionName}: ${userList}`;
       })
-      .join(", ");
+      .join("; ");
 
-    return ` <span class="pr-waiting-on"><span class="pr-waiting-on-label">(waiting on</span> ${waitingList}<span class="pr-waiting-on-label">)</span></span>`;
+    return ` <span class="pr-waiting-on">→ ${actionGroups}</span>`;
   };
 
   const createPRCard = (pr) => {
