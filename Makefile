@@ -2,6 +2,10 @@
 deploy:
 	./hacks/deploy.sh
 
+.PHONY: test
+test:
+	node --test assets/workspace.test.js assets/crypto.test.js assets/integration.test.js
+
 
 # BEGIN: lint-install .
 # http://github.com/codeGROOVE-dev/lint-install

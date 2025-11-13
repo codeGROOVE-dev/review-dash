@@ -13,7 +13,7 @@ const App = (() => {
   const state = {
     currentUser: null,
     viewingUser: null,
-    accessToken: Auth.getStoredToken(),
+    accessToken: null, // Will be loaded async in init()
     organizations: [],
     pullRequests: {
       incoming: [],
@@ -380,7 +380,10 @@ const App = (() => {
   const setCookie = (name, value, days) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+    // Use domain cookie for cross-subdomain persistence
+    const isSecure = window.location.protocol === "https:";
+    const securePart = isSecure ? ";Secure" : "";
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax${securePart}`;
   };
 
   const handlePRAction = async (action, prId) => {
@@ -422,7 +425,28 @@ const App = (() => {
   // Load current user
   const loadCurrentUser = async () => {
     state.currentUser = await Auth.loadCurrentUser();
+    // Store username and login timestamp in cookies
+    if (state.currentUser && state.currentUser.login) {
+      // Only set if not already set (preserve original timestamp)
+      const existingUsername = getCookie("username");
+      if (!existingUsername) {
+        const timestamp = Date.now().toString();
+        setCookie("username", state.currentUser.login, 365);
+        setCookie("login_ts", timestamp, 365);
+      }
+    }
   };
+
+  function getCookie(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
 
   // GitHub API wrapper that uses Auth module
   const githubAPI = async (endpoint, options = {}) => {
@@ -640,6 +664,9 @@ const App = (() => {
 
   // Initialize
   const init = async () => {
+    // Load access token first (async now due to encryption)
+    state.accessToken = await Auth.getStoredToken();
+
     const urlParams = new URLSearchParams(window.location.search);
     const demo = urlParams.get("demo");
     const urlContext = parseURL();
@@ -677,7 +704,7 @@ const App = (() => {
     // Handle changelog page routing
     if (urlContext && urlContext.isChangelog) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (token) {
         try {
           await loadCurrentUser();
@@ -721,7 +748,7 @@ const App = (() => {
     const path = window.location.pathname;
     if (path === "/notifications" || path.match(/^\/notifications\/gh\/[^/]+$/)) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (token) {
         try {
           await loadCurrentUser();
@@ -738,7 +765,7 @@ const App = (() => {
     // Handle robots page routing
     if (path === "/robots" || path.match(/^\/robots\/gh\/[^/]+$/)) {
       updateSearchInputVisibility();
-      const token = Auth.getStoredToken();
+      const token = await Auth.getStoredToken();
       if (!token) {
         showToast("Please login to configure Robot Army", "error");
         window.location.href = "/";
@@ -855,7 +882,7 @@ const App = (() => {
     const authCodeExchanged = await Auth.handleAuthCodeCallback();
 
     // Re-check for authentication token (it might have been set after module load or auth code exchange)
-    state.accessToken = Auth.getStoredToken();
+    state.accessToken = await Auth.getStoredToken();
     console.log("[App.init] Checked for access token:", state.accessToken ? "found" : "not found");
 
     // If we just exchanged an auth code successfully, reload to start with fresh state
@@ -905,6 +932,9 @@ const App = (() => {
     try {
       updateSearchInputVisibility();
       await loadCurrentUser();
+
+      // Initialize workspace defaults after user is loaded
+      Workspace.initializeDefaults();
 
       // If at root URL, redirect to user's page
       if (!urlContext && state.currentUser) {

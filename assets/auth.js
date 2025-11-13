@@ -1,6 +1,8 @@
 // Authentication Module for Ready To Review
 console.log("[Auth Module] Loading...");
 
+import { Crypto } from "./crypto.js";
+
 // Log URL parameters on page load for debugging OAuth flow (without exposing secrets)
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has("code") || urlParams.has("state") || urlParams.has("error")) {
@@ -18,8 +20,7 @@ export const Auth = (() => {
   const CONFIG = {
     CLIENT_ID: "Iv23liYmAKkBpvhHAnQQ",
     API_BASE: "https://api.github.com",
-    STORAGE_KEY: "github_token", // Legacy localStorage key (fallback)
-    COOKIE_KEY: "github_token", // Store all tokens in cookies for cross-subdomain support
+    COOKIE_KEY: "access_token", // Encrypted token in cookies
     OAUTH_REDIRECT_URI: "https://auth.ready-to-review.dev/oauth/callback",
   };
 
@@ -27,11 +28,21 @@ export const Auth = (() => {
   function setCookie(name, value, days) {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+
+    // SECURITY: Always require HTTPS for cookies containing sensitive data
+    // Fail loudly on HTTP to catch development/deployment issues early
+    if (window.location.protocol !== "https:") {
+      console.error("[SECURITY] Cannot set cookie over insecure HTTP connection");
+      console.error("[SECURITY] Cookie name:", name);
+      console.error("[SECURITY] Current protocol:", window.location.protocol);
+      throw new Error("Cookies can only be set over HTTPS for security");
+    }
+
     // Use domain cookie to share across all subdomains of ready-to-review.dev
-    // SameSite=Lax allows cookies to be sent on top-level navigation (OAuth redirects)
-    const isSecure = window.location.protocol === "https:";
-    const securePart = isSecure ? ";Secure" : "";
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax${securePart}`;
+    // SameSite=Lax: Required for OAuth callback (cross-site navigation with state cookie)
+    // Secure: Always set - enforced by protocol check above
+    // HttpOnly: Cannot use - JavaScript needs to read/decrypt tokens
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax;Secure`;
   }
 
   function getCookie(name) {
@@ -50,35 +61,47 @@ export const Auth = (() => {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.ready-to-review.dev;`;
   }
 
-  const getStoredToken = () => {
-    // Always check cookie first (works across subdomains)
-    const cookieToken = getCookie(CONFIG.COOKIE_KEY);
-    if (cookieToken) return cookieToken;
+  // Get encryption context (username, domain, and timestamp)
+  const getEncryptionContext = () => {
+    const username = getCookie("username");
+    const timestamp = getCookie("login_ts");
+    const domain = window.location.hostname.split(".").slice(-2).join("."); // Get base domain
 
-    // Fallback to localStorage for legacy tokens, then migrate to cookie
-    const localToken = localStorage.getItem(CONFIG.STORAGE_KEY);
-    if (localToken) {
-      console.log("[Auth] Migrating token from localStorage to cookie for cross-subdomain support");
-      setCookie(CONFIG.COOKIE_KEY, localToken, 10);
-      localStorage.removeItem(CONFIG.STORAGE_KEY);
-      return localToken;
-    }
-
-    return null;
+    return { username, domain, timestamp };
   };
 
-  const storeToken = (token) => {
-    // Always store in cookie for cross-subdomain support (10 days)
-    setCookie(CONFIG.COOKIE_KEY, token, 10);
-    // Clean up any legacy localStorage token
-    localStorage.removeItem(CONFIG.STORAGE_KEY);
+  const getStoredToken = async () => {
+    const { username, domain, timestamp } = getEncryptionContext();
+
+    const encryptedToken = getCookie(CONFIG.COOKIE_KEY);
+    if (!encryptedToken || !username || !domain || !timestamp) {
+      return null;
+    }
+
+    try {
+      console.log("[Auth] Decrypting stored token");
+      return await Crypto.decryptToken(encryptedToken, username, domain, timestamp);
+    } catch (error) {
+      console.error("[Auth] Failed to decrypt token, clearing invalid token:", error);
+      deleteCookie(CONFIG.COOKIE_KEY);
+      return null;
+    }
+  };
+
+  const storeToken = async (token) => {
+    const { username, domain, timestamp } = getEncryptionContext();
+
+    if (!username || !domain || !timestamp) {
+      throw new Error("Cannot encrypt token: username, domain, or timestamp missing");
+    }
+
+    console.log("[Auth] Encrypting token for storage");
+    const encrypted = await Crypto.encryptToken(token, username, domain, timestamp);
+    setCookie(CONFIG.COOKIE_KEY, encrypted, 10);
   };
 
   const clearToken = () => {
-    // Clear cookie (primary storage)
     deleteCookie(CONFIG.COOKIE_KEY);
-    // Clear localStorage (legacy)
-    localStorage.removeItem(CONFIG.STORAGE_KEY);
   };
 
   const initiateOAuthLogin = () => {
@@ -196,7 +219,7 @@ export const Auth = (() => {
       });
 
       if (response.ok) {
-        storeToken(token); // Store in cookie
+        await storeToken(token); // Store encrypted token in cookie
         closePATModal();
         window.location.reload();
       } else {
@@ -244,8 +267,13 @@ export const Auth = (() => {
 
       const data = await response.json();
 
-      // Store token in localStorage
-      storeToken(data.token);
+      // Store username and login timestamp (milliseconds since 1970)
+      const timestamp = Date.now().toString();
+      setCookie("username", data.username, 365);
+      setCookie("login_ts", timestamp, 365);
+
+      // Store encrypted token
+      await storeToken(data.token);
 
       console.log("[Auth] Successfully exchanged auth code for token, user:", data.username);
 
@@ -279,7 +307,7 @@ export const Auth = (() => {
       ...options.headers,
     };
 
-    const token = getStoredToken();
+    const token = await getStoredToken();
     if (token) {
       headers.Authorization = `token ${token}`;
     }
@@ -350,7 +378,7 @@ export const Auth = (() => {
 
   // GraphQL API function with retry logic
   const githubGraphQL = async (query, variables = {}, retries = 5) => {
-    const token = getStoredToken();
+    const token = await getStoredToken();
     if (!token) {
       throw new Error("No authentication token available");
     }

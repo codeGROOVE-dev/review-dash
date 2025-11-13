@@ -1172,35 +1172,27 @@ a {
   font-weight: 500;
 }
 
-/* Waiting on section */
+/* Waiting on section - now shows action format: "-> review: YOU, someone_else" */
 .pr-waiting-on {
   display: inline;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-.pr-waiting-on-label {
-  color: var(--color-text-tertiary);
-}
-
-.pr-waiting-on-user {
-  color: var(--color-text-secondary);
+.pr-action-user {
+  color: #6b7280;
+  font-weight: 600;
   cursor: help;
   text-decoration: none;
   position: relative;
 }
 
-.pr-waiting-on-user:hover {
+.pr-action-user:hover {
   text-decoration: underline;
 }
 
-.pr-waiting-on-you {
+.pr-action-you {
   color: #dc2626;
-  font-weight: 700;
-}
-
-.pr-waiting-on-you-green {
-  color: #166534;
   font-weight: 700;
 }
 
