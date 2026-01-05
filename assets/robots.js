@@ -220,7 +220,7 @@ export const Robots = (() => {
         const urlContext = parseURL();
         const org = urlContext?.org || orgSelect?.value;
         if (org && org !== "*") {
-          window.location.href = `https://${org}.ready-to-review.dev/robots`;
+          window.location.href = `https://${org}.reviewGOOSE.dev/robots`;
         } else {
           window.location.href = `/robots`;
         }
@@ -496,7 +496,7 @@ export const Robots = (() => {
     if (!selectedOrg || selectedOrg === "*") {
       window.location.href = `/robots`;
     } else {
-      window.location.href = `https://${selectedOrg}.ready-to-review.dev/robots`;
+      window.location.href = `https://${selectedOrg}.reviewGOOSE.dev/robots`;
     }
   };
 

@@ -3,7 +3,7 @@ console.log("[Workspace Module] Loading...");
 export const Workspace = (() => {
   console.log("[Workspace Module] Initializing...");
 
-  const BASE_DOMAIN = "ready-to-review.dev";
+  const BASE_DOMAIN = "reviewGOOSE.dev";
 
   // Extract workspace from hostname
   const currentWorkspace = () => {

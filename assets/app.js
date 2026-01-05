@@ -383,7 +383,7 @@ const App = (() => {
     // Use domain cookie for cross-subdomain persistence
     const isSecure = window.location.protocol === "https:";
     const securePart = isSecure ? ";Secure" : "";
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax${securePart}`;
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.reviewGOOSE.dev;SameSite=Lax${securePart}`;
   };
 
   const handlePRAction = async (action, prId) => {

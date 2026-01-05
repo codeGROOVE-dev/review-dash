@@ -21,7 +21,7 @@ export const Auth = (() => {
     CLIENT_ID: "Iv23liYmAKkBpvhHAnQQ",
     API_BASE: "https://api.github.com",
     COOKIE_KEY: "access_token", // Encrypted token in cookies
-    OAUTH_REDIRECT_URI: "https://auth.ready-to-review.dev/oauth/callback",
+    OAUTH_REDIRECT_URI: "https://auth.reviewGOOSE.dev/oauth/callback",
   };
 
   // Cookie Functions
@@ -38,11 +38,11 @@ export const Auth = (() => {
       throw new Error("Cookies can only be set over HTTPS for security");
     }
 
-    // Use domain cookie to share across all subdomains of ready-to-review.dev
+    // Use domain cookie to share across all subdomains of reviewGOOSE.dev
     // SameSite=Lax: Required for OAuth callback (cross-site navigation with state cookie)
     // Secure: Always set - enforced by protocol check above
     // HttpOnly: Cannot use - JavaScript needs to read/decrypt tokens
-    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.ready-to-review.dev;SameSite=Lax;Secure`;
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.reviewGOOSE.dev;SameSite=Lax;Secure`;
   }
 
   function getCookie(name) {
@@ -58,7 +58,7 @@ export const Auth = (() => {
 
   function deleteCookie(name) {
     // Must match the domain used in setCookie to properly delete
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.ready-to-review.dev;`;
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;domain=.reviewGOOSE.dev;`;
   }
 
   // Get encryption context (username, domain, and timestamp)
