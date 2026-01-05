@@ -14,7 +14,7 @@ describe("Crypto Module", () => {
     it("should encrypt and decrypt a token successfully", async () => {
       const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       // Encrypt
@@ -35,7 +35,7 @@ describe("Crypto Module", () => {
     it("should produce different ciphertext for same token (random IV)", async () => {
       const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       const encrypted1 = await Crypto.encryptToken(token, username, domain, timestamp);
@@ -54,7 +54,7 @@ describe("Crypto Module", () => {
     it("should fail to decrypt with wrong username", async () => {
       const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       const encrypted = await Crypto.encryptToken(token, username, domain, timestamp);
@@ -68,7 +68,7 @@ describe("Crypto Module", () => {
     it("should fail to decrypt with wrong domain", async () => {
       const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       const encrypted = await Crypto.encryptToken(token, username, domain, timestamp);
@@ -82,7 +82,7 @@ describe("Crypto Module", () => {
     it("should fail to decrypt with wrong timestamp", async () => {
       const token = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       const encrypted = await Crypto.encryptToken(token, username, domain, timestamp);
@@ -100,7 +100,7 @@ describe("Crypto Module", () => {
         "github_pat_11ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789012345678901234567890", // Fine-grained PAT
       ];
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const timestamp = "1699564800000";
 
       for (const token of tokens) {
@@ -172,7 +172,7 @@ describe("Crypto Module", () => {
       // Simulate a real login flow
       const githubToken = "ghp_vT3xR9pL2kQ8mN4bV7wC1yZ5sA6fD0hJ";
       const username = "tstromberg";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
       const loginTimestamp = Date.now().toString();
 
       // User logs in - token gets encrypted
@@ -202,7 +202,7 @@ describe("Crypto Module", () => {
     it("should produce different keys for different timestamps", async () => {
       const token = "ghp_test123";
       const username = "testuser";
-      const domain = "ready-to-review.dev";
+      const domain = "reviewGOOSE.dev";
 
       const ts1 = "1699564800000";
       const ts2 = "1699564800001"; // 1 millisecond later

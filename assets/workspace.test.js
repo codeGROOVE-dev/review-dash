@@ -42,7 +42,7 @@ class MockWindow {
 let mockDocument;
 let mockWindow;
 
-function setupMocks(hostname = "ready-to-review.dev") {
+function setupMocks(hostname = "reviewGOOSE.dev") {
   mockDocument = new MockDocument();
   mockWindow = new MockWindow(hostname);
   global.document = mockDocument;
@@ -56,7 +56,7 @@ function cleanupMocks() {
 
 // Create workspace module factory for testing
 function createWorkspaceModule() {
-  const BASE_DOMAIN = "ready-to-review.dev";
+  const BASE_DOMAIN = "reviewGOOSE.dev";
 
   const currentWorkspace = () => {
     const hostname = window.location.hostname;
@@ -190,19 +190,19 @@ describe("Workspace Module", () => {
 
   describe("currentWorkspace()", () => {
     it("should return null for base domain", () => {
-      setupMocks("ready-to-review.dev");
+      setupMocks("reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       assert.strictEqual(Workspace.currentWorkspace(), null);
     });
 
     it("should return null for www subdomain", () => {
-      setupMocks("www.ready-to-review.dev");
+      setupMocks("www.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       assert.strictEqual(Workspace.currentWorkspace(), null);
     });
 
     it("should return org name for org subdomain", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       assert.strictEqual(Workspace.currentWorkspace(), "myorg");
     });
@@ -220,14 +220,14 @@ describe("Workspace Module", () => {
     });
 
     it("should return orgs from cookie for personal workspace", () => {
-      setupMocks("ready-to-review.dev");
+      setupMocks("reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = 'hidden_orgs_personal=["testuser","testorg"]';
       assert.deepStrictEqual(Workspace.hiddenOrgs(), ["testuser", "testorg"]);
     });
 
     it("should return orgs from cookie for org workspace", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = 'hidden_orgs_myorg=["testuser"]';
       assert.deepStrictEqual(Workspace.hiddenOrgs(), ["testuser"]);
@@ -236,7 +236,7 @@ describe("Workspace Module", () => {
 
   describe("setHiddenOrgs()", () => {
     it("should set cookie for personal workspace", () => {
-      setupMocks("ready-to-review.dev");
+      setupMocks("reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       Workspace.setHiddenOrgs(["testuser"]);
       assert.ok(document.cookie.includes("hidden_orgs_personal"));
@@ -244,7 +244,7 @@ describe("Workspace Module", () => {
     });
 
     it("should set cookie for org workspace", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       Workspace.setHiddenOrgs(["testuser", "anotherorg"]);
       assert.ok(document.cookie.includes("hidden_orgs_myorg"));
@@ -252,7 +252,7 @@ describe("Workspace Module", () => {
     });
 
     it("should handle empty array", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       Workspace.setHiddenOrgs([]);
       assert.deepStrictEqual(Workspace.hiddenOrgs(), []);
@@ -261,7 +261,7 @@ describe("Workspace Module", () => {
 
   describe("toggleOrgVisibility()", () => {
     it("should add org to hidden list when not present", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       const result = Workspace.toggleOrgVisibility("testuser");
       assert.deepStrictEqual(result, ["testuser"]);
@@ -269,7 +269,7 @@ describe("Workspace Module", () => {
     });
 
     it("should remove org from hidden list when present", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       Workspace.setHiddenOrgs(["testuser", "anotherorg"]);
       const result = Workspace.toggleOrgVisibility("testuser");
@@ -278,7 +278,7 @@ describe("Workspace Module", () => {
     });
 
     it("should toggle multiple times correctly", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
 
       Workspace.toggleOrgVisibility("testuser");
@@ -294,7 +294,7 @@ describe("Workspace Module", () => {
 
   describe("initializeDefaults()", () => {
     it("should hide personal account in org workspace on first visit", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = "username=testuser";
 
@@ -305,7 +305,7 @@ describe("Workspace Module", () => {
     });
 
     it("should not set defaults if cookie already exists", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = "username=testuser";
       document.cookie = 'hidden_orgs_myorg=["someorg"]';
@@ -316,7 +316,7 @@ describe("Workspace Module", () => {
     });
 
     it("should not set defaults in personal workspace", () => {
-      setupMocks("ready-to-review.dev");
+      setupMocks("reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = "username=testuser";
 
@@ -326,7 +326,7 @@ describe("Workspace Module", () => {
     });
 
     it("should not set defaults if username cookie missing", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
 
       Workspace.initializeDefaults();
@@ -340,7 +340,7 @@ describe("Workspace Module", () => {
       const sharedCookieStore = new MockDocument();
 
       // Setup org1 workspace
-      setupMocks("org1.ready-to-review.dev");
+      setupMocks("org1.reviewGOOSE.dev");
       global.document = sharedCookieStore; // Use shared cookie store
       Workspace = createWorkspaceModule();
       sharedCookieStore.cookie = "username=testuser";
@@ -349,7 +349,7 @@ describe("Workspace Module", () => {
       assert.ok(sharedCookieStore.cookie.includes("hidden_orgs_org1"));
 
       // Setup org2 workspace - uses same cookie store
-      mockWindow = new MockWindow("org2.ready-to-review.dev");
+      mockWindow = new MockWindow("org2.reviewGOOSE.dev");
       global.window = mockWindow;
       Workspace = createWorkspaceModule();
       Workspace.initializeDefaults();
@@ -357,7 +357,7 @@ describe("Workspace Module", () => {
       assert.ok(sharedCookieStore.cookie.includes("hidden_orgs_org2"));
 
       // Verify org1 still has its settings
-      mockWindow = new MockWindow("org1.ready-to-review.dev");
+      mockWindow = new MockWindow("org1.reviewGOOSE.dev");
       global.window = mockWindow;
       Workspace = createWorkspaceModule();
       assert.deepStrictEqual(Workspace.hiddenOrgs(), ["testuser"]);
@@ -367,7 +367,7 @@ describe("Workspace Module", () => {
       assert.deepStrictEqual(Workspace.hiddenOrgs(), []);
 
       // Switch to org2 - should still have testuser hidden
-      mockWindow = new MockWindow("org2.ready-to-review.dev");
+      mockWindow = new MockWindow("org2.reviewGOOSE.dev");
       global.window = mockWindow;
       Workspace = createWorkspaceModule();
       assert.deepStrictEqual(Workspace.hiddenOrgs(), ["testuser"]);
@@ -376,7 +376,7 @@ describe("Workspace Module", () => {
 
   describe("Integration: Full workflow", () => {
     it("should allow user to override defaults by toggling", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = "username=testuser";
 
@@ -395,7 +395,7 @@ describe("Workspace Module", () => {
     });
 
     it("should maintain preferences across reloads", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       document.cookie = "username=testuser";
 
@@ -417,7 +417,7 @@ describe("Workspace Module", () => {
     });
 
     it("should handle repeated toggles correctly (idempotency test)", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
 
       // Start with some orgs hidden
@@ -445,7 +445,7 @@ describe("Workspace Module", () => {
     });
 
     it("should not duplicate orgs when toggled multiple times rapidly", () => {
-      setupMocks("myorg.ready-to-review.dev");
+      setupMocks("myorg.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
 
       // Simulate rapid clicking - toggle same org many times

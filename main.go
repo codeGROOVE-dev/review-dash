@@ -34,8 +34,8 @@ const (
 	defaultPort        = "8080"
 	defaultAppID       = 1546081
 	defaultClientID    = "Iv23liYmAKkBpvhHAnQQ"
-	defaultRedirectURI = "https://auth.ready-to-review.dev/oauth/callback"
-	baseDomain         = "ready-to-review.dev"
+	defaultRedirectURI = "https://auth.reviewGOOSE.dev/oauth/callback"
+	baseDomain         = "reviewGOOSE.dev"
 
 	// Rate limiting.
 	rateLimitRequests = 10
@@ -220,12 +220,12 @@ func securityHeaders(next http.Handler) http.Handler {
 
 		// Content Security Policy with Trusted Types for DOM XSS protection
 		csp := []string{
-			"default-src 'self' https://ready-to-review.dev",
-			"script-src 'self' https://ready-to-review.dev",
-			"style-src 'self' https://ready-to-review.dev",
-			"img-src 'self' https://ready-to-review.dev https://avatars.githubusercontent.com data:",
+			"default-src 'self' https://reviewGOOSE.dev",
+			"script-src 'self' https://reviewGOOSE.dev",
+			"style-src 'self' https://reviewGOOSE.dev",
+			"img-src 'self' https://reviewGOOSE.dev https://avatars.githubusercontent.com data:",
 			"connect-src 'self' https://api.github.com https://turn.github.codegroove.app",
-			"font-src 'self' https://ready-to-review.dev",
+			"font-src 'self' https://reviewGOOSE.dev",
 			"object-src 'none'",
 			"frame-src 'none'",
 			"base-uri 'self'",
@@ -457,7 +457,7 @@ func serveStaticFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// CORS: Allow subdomains to load assets from naked domain
-	// Check Origin header and allow all subdomains of ready-to-review.dev
+	// Check Origin header and allow all subdomains of reviewGOOSE.dev
 	origin := r.Header.Get("Origin")
 	if origin != "" {
 		// Parse origin to validate it's one of our subdomains
@@ -665,7 +665,7 @@ func handleOAuthLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, stateCookie)
 
-	// Build authorization URL (always use auth.ready-to-review.dev callback)
+	// Build authorization URL (always use auth.reviewGOOSE.dev callback)
 	authURL := fmt.Sprintf(
 		"https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
 		url.QueryEscape(*clientID),

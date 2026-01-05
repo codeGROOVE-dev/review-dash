@@ -40,7 +40,7 @@ go build
 PORT=8080 GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy ./dashboard
 
 # Command line flags
-# Defaults: client-id=Iv23liYmAKkBpvhHAnQQ, redirect-uri=https://dash.ready-to-review.dev/oauth/callback
+# Defaults: client-id=Iv23liYmAKkBpvhHAnQQ, redirect-uri=https://dash.reviewGOOSE.dev/oauth/callback
 ./dashboard \
   --port=8080 \
   --client-secret=yyy \
@@ -57,7 +57,7 @@ PORT=8080 GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy ./dashboard
 ## GitHub OAuth Setup
 
 1. Create OAuth App at GitHub Settings > Developer settings > OAuth Apps
-2. Set callback URL to `https://dash.ready-to-review.dev/oauth/callback` (or your custom URL)
+2. Set callback URL to `https://dash.reviewGOOSE.dev/oauth/callback` (or your custom URL)
 3. Use the client secret with the Go server (client ID defaults to Iv23liYmAKkBpvhHAnQQ)
 
 ## Security Best Practices

@@ -896,13 +896,14 @@ a {
   border-color: rgba(255, 69, 58, 0.4);
 }
 
-.pr-card[data-state="ready"] {
+/* Only show green "ready" state for outgoing PRs */
+#outgoingPRs .pr-card[data-state="ready"] {
   border-left-color: #30d158;
   background: rgba(52, 199, 89, 0.08);
   border-color: rgba(52, 199, 89, 0.3);
 }
 
-.pr-card[data-state="ready"]:hover {
+#outgoingPRs .pr-card[data-state="ready"]:hover {
   background: rgba(52, 199, 89, 0.12);
   border-color: rgba(52, 199, 89, 0.4);
 }
@@ -1035,6 +1036,13 @@ a {
   background: #dc2626;
   color: #ffffff;
   font-weight: 700;
+}
+
+/* Green badge for "blocked on you" when on green cards */
+#outgoingPRs .pr-card[data-blocked-on-viewing="true"] .badge-blocked-on-you,
+#outgoingPRs .pr-card[data-state="ready"] .badge-blocked-on-you {
+  background: #22c55e;
+  color: #ffffff;
 }
 
 .badge-ready {
@@ -1194,6 +1202,12 @@ a {
 .pr-action-you {
   color: #dc2626;
   font-weight: 700;
+}
+
+/* Green "YOU" text for outgoing PRs blocked on viewing user */
+#outgoingPRs .pr-card[data-blocked-on-viewing="true"] .pr-action-you,
+#outgoingPRs .pr-card[data-state="ready"] .pr-action-you {
+  color: #22c55e;
 }
 
 /* Replaced animated dots with static text for performance */

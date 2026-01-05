@@ -577,7 +577,9 @@ export const User = (() => {
 
           // Check if cached orgs are for the current user
           if (userId === currentUserId && orgs) {
-            return orgs.includes(orgName);
+            // Case-insensitive comparison since workspace subdomain may differ in case from GitHub org name
+            const orgNameLower = orgName.toLowerCase();
+            return orgs.some((org) => org.toLowerCase() === orgNameLower);
           }
         }
       } catch (e) {
