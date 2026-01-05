@@ -4,7 +4,7 @@ import { Leaderboard } from "./leaderboard.js";
 import { Robots } from "./robots.js";
 import { Stats } from "./stats.js";
 import { User } from "./user.js";
-// Ready To Review - Modern ES6+ Application
+// reviewGOOSE - Modern ES6+ Application
 import { $, clearChildren, el, hide, show, showToast } from "./utils.js";
 import { Workspace } from "./workspace.js";
 

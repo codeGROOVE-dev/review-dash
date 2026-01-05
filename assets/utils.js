@@ -1,4 +1,4 @@
-// Shared utilities for Ready To Review
+// Shared utilities for reviewGOOSE
 
 // DOM Helpers
 export const $ = (id) => document.getElementById(id);
