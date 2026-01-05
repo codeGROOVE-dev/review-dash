@@ -1,4 +1,4 @@
-// Crypto Module for Ready To Review
+// Crypto Module for reviewGOOSE
 // Encrypts sensitive data like GitHub tokens to prevent them from appearing raw on disk/memory
 console.log("[Crypto Module] Loading...");
 

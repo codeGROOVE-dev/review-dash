@@ -1,4 +1,4 @@
-// Workspace Module for Ready To Review
+// Workspace Module for reviewGOOSE
 console.log("[Workspace Module] Loading...");
 export const Workspace = (() => {
   console.log("[Workspace Module] Initializing...");

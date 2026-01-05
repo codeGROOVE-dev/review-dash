@@ -34,7 +34,7 @@ const (
 	defaultPort        = "8080"
 	defaultAppID       = 1546081
 	defaultClientID    = "Iv23liYmAKkBpvhHAnQQ"
-	defaultRedirectURI = "https://auth.reviewGOOSE.dev/oauth/callback"
+	defaultRedirectURI = "https://reviewGOOSE.dev/oauth/callback"
 	baseDomain         = "reviewGOOSE.dev"
 
 	// Rate limiting.
@@ -218,22 +218,20 @@ func securityHeaders(next http.Handler) http.Handler {
 		// Permissions policy
 		w.Header().Set("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
 
-		// Content Security Policy with Trusted Types for DOM XSS protection
+		// Content Security Policy
 		csp := []string{
-			"default-src 'self' https://reviewGOOSE.dev",
-			"script-src 'self' https://reviewGOOSE.dev",
-			"style-src 'self' https://reviewGOOSE.dev",
-			"img-src 'self' https://reviewGOOSE.dev https://avatars.githubusercontent.com data:",
+			"default-src 'self' https://reviewGOOSE.dev https://*.reviewGOOSE.dev",
+			"script-src 'self' https://reviewGOOSE.dev https://*.reviewGOOSE.dev",
+			"style-src 'self' https://reviewGOOSE.dev https://*.reviewGOOSE.dev",
+			"img-src 'self' https://reviewGOOSE.dev https://*.reviewGOOSE.dev https://avatars.githubusercontent.com data:",
 			"connect-src 'self' https://api.github.com https://turn.github.codegroove.app",
-			"font-src 'self' https://reviewGOOSE.dev",
+			"font-src 'self' https://reviewGOOSE.dev https://*.reviewGOOSE.dev",
 			"object-src 'none'",
 			"frame-src 'none'",
 			"base-uri 'self'",
 			"form-action 'self'",
 			"frame-ancestors 'none'",
-			"upgrade-insecure-requests",          // Force all resources to HTTPS
-			"require-trusted-types-for 'script'", // Block DOM XSS via innerHTML
-			"trusted-types default",              // Allow only default policy
+			"upgrade-insecure-requests",
 		}
 		w.Header().Set("Content-Security-Policy", strings.Join(csp, "; "))
 
@@ -462,9 +460,10 @@ func serveStaticFiles(w http.ResponseWriter, r *http.Request) {
 	if origin != "" {
 		// Parse origin to validate it's one of our subdomains
 		if u, err := url.Parse(origin); err == nil {
-			host := u.Hostname()
-			// Allow naked domain and all subdomains
-			if host == baseDomain || strings.HasSuffix(host, "."+baseDomain) {
+			host := strings.ToLower(u.Hostname())
+			baseDomainLower := strings.ToLower(baseDomain)
+			// Allow naked domain and all subdomains (case-insensitive)
+			if host == baseDomainLower || strings.HasSuffix(host, "."+baseDomainLower) {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
 				w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
 				w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type")
@@ -624,16 +623,17 @@ func handleOAuthLogin(w http.ResponseWriter, r *http.Request) {
 		scheme = "https"
 	}
 
-	// If not on auth subdomain, redirect there with return_to parameter
-	if !strings.HasPrefix(currentHost, "auth.") {
+	// If not on base domain, redirect there with return_to parameter
+	// Use case-insensitive comparison since DNS hostnames are case-insensitive
+	if !strings.EqualFold(currentHost, baseDomain) {
 		returnTo := fmt.Sprintf("%s://%s/", scheme, currentHost)
-		authURL := fmt.Sprintf("%s://auth.%s/oauth/login?return_to=%s", scheme, baseDomain, url.QueryEscape(returnTo))
-		log.Printf("[OAuth] Redirecting to auth subdomain: %s", authURL)
+		authURL := fmt.Sprintf("%s://%s/oauth/login?return_to=%s", scheme, baseDomain, url.QueryEscape(returnTo))
+		log.Printf("[OAuth] Redirecting to base domain for OAuth: %s", authURL)
 		http.Redirect(w, r, authURL, http.StatusFound)
 		return
 	}
 
-	// We're on auth subdomain - proceed with OAuth flow
+	// We're on base domain - proceed with OAuth flow
 	// Store return_to in state
 	returnTo := r.URL.Query().Get("return_to")
 
@@ -665,7 +665,7 @@ func handleOAuthLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, stateCookie)
 
-	// Build authorization URL (always use auth.reviewGOOSE.dev callback)
+	// Build authorization URL (always use reviewGOOSE.dev callback)
 	authURL := fmt.Sprintf(
 		"https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
 		url.QueryEscape(*clientID),

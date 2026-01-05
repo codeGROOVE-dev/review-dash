@@ -1,4 +1,4 @@
-// User PR Dashboard Module for Ready To Review
+// User PR Dashboard Module for reviewGOOSE
 import {
   $,
   $$,
@@ -156,7 +156,12 @@ export const User = (() => {
 
       return data;
     } catch (error) {
-      console.warn(`Turn API request failed for ${prUrl}:`, error);
+      console.warn(`Turn API request to https://turn.github.codegroove.app/v1/validate failed for ${prUrl}:`, {
+        name: error.name,
+        message: error.message,
+        cause: error.cause,
+        stack: error.stack,
+      });
       return null;
     }
   };

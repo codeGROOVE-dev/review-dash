@@ -1,4 +1,4 @@
-// Authentication Module for Ready To Review
+// Authentication Module for reviewGOOSE
 console.log("[Auth Module] Loading...");
 
 import { Crypto } from "./crypto.js";
@@ -21,7 +21,7 @@ export const Auth = (() => {
     CLIENT_ID: "Iv23liYmAKkBpvhHAnQQ",
     API_BASE: "https://api.github.com",
     COOKIE_KEY: "access_token", // Encrypted token in cookies
-    OAUTH_REDIRECT_URI: "https://auth.reviewGOOSE.dev/oauth/callback",
+    OAUTH_REDIRECT_URI: "https://reviewGOOSE.dev/oauth/callback",
   };
 
   // Cookie Functions

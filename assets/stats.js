@@ -1,4 +1,4 @@
-// Stats Module for Ready To Review
+// Stats Module for reviewGOOSE
 import { $, escapeHtml, hide, show } from "./utils.js";
 
 export const Stats = (() => {
