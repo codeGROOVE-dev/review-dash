@@ -158,3 +158,103 @@ func TestServerIntegration(t *testing.T) {
 	}
 	t.Fatal("Server did not return 200 OK within 5 seconds")
 }
+
+// TestBaseDomainRedirect verifies that the frontpage of the base domain
+// redirects to codegroove.dev/reviewgoose/ while subdomains serve the dashboard.
+func TestBaseDomainRedirect(t *testing.T) {
+	tests := []struct {
+		name         string
+		host         string
+		path         string
+		wantRedirect bool
+		wantLocation string
+	}{
+		{
+			name:         "base domain frontpage redirects",
+			host:         baseDomain,
+			path:         "/",
+			wantRedirect: true,
+			wantLocation: "https://codegroove.dev/reviewgoose/",
+		},
+		{
+			name:         "base domain with assets does not redirect",
+			host:         baseDomain,
+			path:         "/assets/styles.css",
+			wantRedirect: false,
+		},
+		{
+			name:         "my subdomain frontpage does not redirect",
+			host:         "my." + baseDomain,
+			path:         "/",
+			wantRedirect: false,
+		},
+		{
+			name:         "org subdomain frontpage does not redirect",
+			host:         "kubernetes." + baseDomain,
+			path:         "/",
+			wantRedirect: false,
+		},
+		{
+			name:         "case insensitive base domain redirects",
+			host:         "ReviewGOOSE.dev",
+			path:         "/",
+			wantRedirect: true,
+			wantLocation: "https://codegroove.dev/reviewgoose/",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodGet, "http://"+tt.host+tt.path, http.NoBody)
+			if err != nil {
+				t.Fatalf("Failed to create request: %v", err)
+			}
+
+			// Test with CheckRedirect to prevent following redirects
+			client := &http.Client{
+				CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+					return http.ErrUseLastResponse
+				},
+			}
+
+			// Use responseWriter to capture response
+			rr := &testResponseWriter{header: make(http.Header)}
+			serveStaticFiles(rr, req)
+
+			if tt.wantRedirect {
+				if rr.statusCode != http.StatusFound {
+					t.Errorf("Expected redirect (302), got %d", rr.statusCode)
+				}
+				location := rr.Header().Get("Location")
+				if location != tt.wantLocation {
+					t.Errorf("Expected redirect to %q, got %q", tt.wantLocation, location)
+				}
+			} else if rr.statusCode == http.StatusFound {
+				location := rr.Header().Get("Location")
+				t.Errorf("Unexpected redirect to %q", location)
+			}
+
+			_ = client // Suppress unused variable warning
+		})
+	}
+}
+
+// testResponseWriter is a simple ResponseWriter for testing.
+type testResponseWriter struct {
+	header     http.Header
+	statusCode int
+	body       []byte
+}
+
+func (w *testResponseWriter) Header() http.Header {
+	return w.header
+}
+
+func (w *testResponseWriter) Write(b []byte) (int, error) {
+	w.body = append(w.body, b...)
+	return len(b), nil
+}
+
+func (w *testResponseWriter) WriteHeader(statusCode int) {
+	w.statusCode = statusCode
+}

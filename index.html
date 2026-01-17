@@ -229,10 +229,18 @@
                                 />
                             </svg>
                             <h2>Welcome to reviewGOOSE</h2>
-                            <p>
-                                Choose how you'd like to access your GitHub pull
-                                requests
+                            <p class="login-tagline">
+                                <strong>PRs that merge in minutes, not days.</strong>
                             </p>
+                            <p class="login-description">
+                                A deterministic state machine that tracks every PR from creation through merge.
+                                Get notified when it's your turn to act - and only then.
+                            </p>
+                            <div class="login-features">
+                                <div class="login-feature">🧠 Always know whose turn it is</div>
+                                <div class="login-feature">🔕 Zero notification noise</div>
+                                <div class="login-feature">⚡ Ship 20X faster</div>
+                            </div>
 
                             <div class="login-options">
                                 <a
@@ -566,6 +574,43 @@
                             </p>
                         </header>
 
+                        <div class="stats-calculator-banner">
+                            <div class="calculator-banner-content">
+                                <div class="calculator-banner-icon">📊</div>
+                                <div class="calculator-banner-text">
+                                    <h3 class="calculator-banner-title">Want deeper insights?</h3>
+                                    <p class="calculator-banner-description">
+                                        Our PR Efficiency Calculator offers a more modern and comprehensive view of your organization's performance, including cost analysis and improvement recommendations.
+                                    </p>
+                                </div>
+                                <a
+                                    href="https://cost.github.codegroove.app/?mode=org"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="calculator-banner-button"
+                                >
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path d="M12 20V10M6 20V4m12 16v-6" />
+                                        <rect
+                                            x="3"
+                                            y="20"
+                                            width="18"
+                                            height="1"
+                                            fill="currentColor"
+                                        />
+                                    </svg>
+                                    Open Calculator
+                                </a>
+                            </div>
+                        </div>
+
                         <div id="orgStatsContainer" class="org-stats-container">
                             <!-- Organization sections will be dynamically added here -->
                         </div>
@@ -580,10 +625,10 @@
                         <div class="notifications-hero">
                             <div class="notifications-hero-content">
                                 <h1 class="notifications-title">
-                                    Stay connected to your pull requests
+                                    Get notified when it's your turn
                                 </h1>
                                 <p class="notifications-subtitle">
-                                    Get notified when PRs need your attention, wherever you work.
+                                    Choose how you want to receive PR notifications. Mix and match multiple options for maximum coverage.
                                 </p>
                             </div>
                         </div>
@@ -593,107 +638,78 @@
                                 <!-- Slack Card - Primary Integration -->
                                 <div class="notification-card slack-card">
                                     <div class="card-decoration">
-                                        <div class="floating-icon">
-                                            <svg
-                                                width="40"
-                                                height="40"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="1.5"
-                                            >
-                                                <path
-                                                    d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"
-                                                />
-                                                <path
-                                                    d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
-                                                />
-                                                <path
-                                                    d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"
-                                                />
-                                                <path
-                                                    d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"
-                                                />
-                                                <path
-                                                    d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"
-                                                />
-                                                <path
-                                                    d="M14 20.5V19h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5z"
-                                                />
-                                                <path
-                                                    d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"
-                                                />
-                                                <path
-                                                    d="M10 3.5V5H8.5C7.67 5 7 4.33 7 3.5S7.67 2 8.5 2s1.5.67 1.5 1.5z"
-                                                />
-                                            </svg>
-                                        </div>
+                                        <div class="floating-icon">💬</div>
                                     </div>
                                     <div class="card-content">
                                         <div class="card-header">
-                                            <h3>Slack App</h3>
-                                            <span class="badge-new">RECOMMENDED</span>
+                                            <h3>Slack</h3>
+                                            <span class="badge-new">MOST POPULAR</span>
                                         </div>
                                         <p class="card-description">
-                                            Get PR notifications directly in Slack. Perfect for teams that live in Slack.
+                                            Auto-threads PRs in channels. Smart DMs with configurable delays. Daily reminders in your timezone.
                                         </p>
                                         <div class="feature-grid">
-                                            <div class="feature-item">
-                                                <span>📢 Channel notifications</span>
-                                            </div>
-                                            <div class="feature-item">
-                                                <span>💬 Direct messages</span>
-                                            </div>
-                                            <div class="feature-item">
-                                                <span>⚡ Real-time updates</span>
-                                            </div>
-                                            <div class="feature-item">
-                                                <span>🎯 Smart filtering</span>
-                                            </div>
+                                            <div class="feature-item">📢 Channel threads</div>
+                                            <div class="feature-item">⏰ Smart timing</div>
+                                            <div class="feature-item">🌍 Timezone-aware</div>
+                                            <div class="feature-item">🎯 Turn detection</div>
                                         </div>
-                                        <a
-                                            href="https://slack.com/oauth/v2/authorize?client_id=9426269265270.9443955134789&scope=channels:history,channels:read,chat:write,chat:write.public,commands,im:write,reactions:write,team:read,users:read,users:read.email,groups:read,groups:history&user_scope="
-                                            target="_blank"
-                                            rel="noopener"
-                                            class="action-button primary"
-                                            style="display: inline-block; margin-top: 1rem;"
-                                        >
-                                            <img
-                                                alt="Add to Slack"
-                                                height="40"
-                                                width="139"
-                                                src="https://platform.slack-edge.com/img/add_to_slack.png"
-                                                srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
-                                                style="border: none;"
-                                            />
-                                        </a>
-                                        <div class="slack-links">
+                                        <div class="card-actions">
                                             <a
-                                                href="https://github.com/codeGROOVE-dev/slacker/blob/main/docs/SETUP.md"
+                                                href="https://slack.com/oauth/v2/authorize?client_id=9426269265270.9443955134789&scope=channels:history,channels:read,chat:write,chat:write.public,commands,im:write,reactions:write,team:read,users:read,users:read.email,groups:read,groups:history&user_scope="
                                                 target="_blank"
                                                 rel="noopener"
-                                                class="slack-help-link"
+                                                class="action-button primary"
                                             >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                                </svg>
-                                                Setup Documentation
+                                                Add to Slack
                                             </a>
                                             <a
-                                                href="#"
-                                                id="slackConfigLink"
+                                                href="https://docs.codegroove.dev/reviewgoose/slack/"
                                                 target="_blank"
                                                 rel="noopener"
-                                                class="slack-help-link"
+                                                class="action-button secondary"
                                             >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M12 20h9"></path>
-                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                                <span id="slackConfigText">Configuration File</span>
+                                                Documentation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Discord Card -->
+                                <div class="notification-card discord-card">
+                                    <div class="card-decoration">
+                                        <div class="floating-icon">🎮</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <h3>Discord</h3>
+                                            <span class="badge-preview">PREVIEW</span>
+                                        </div>
+                                        <p class="card-description">
+                                            Forum threads for PRs. Auto-discovery. Smart notifications. Perfect for dev communities.
+                                        </p>
+                                        <div class="feature-grid">
+                                            <div class="feature-item">💭 Forum threads</div>
+                                            <div class="feature-item">🔍 Auto-discovery</div>
+                                            <div class="feature-item">📣 Guild channels</div>
+                                            <div class="feature-item">👥 User mapping</div>
+                                        </div>
+                                        <div class="card-actions">
+                                            <a
+                                                href="https://discord.com/oauth2/authorize?client_id=1461368540190871831&permissions=2147485696&scope=bot%20applications.commands"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button primary"
+                                            >
+                                                Add to Discord
+                                            </a>
+                                            <a
+                                                href="https://docs.codegroove.dev/reviewgoose/discord/"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button secondary"
+                                            >
+                                                Documentation
                                             </a>
                                         </div>
                                     </div>
@@ -702,157 +718,77 @@
                                 <!-- Desktop App Card -->
                                 <div class="notification-card desktop-card">
                                     <div class="card-decoration">
-                                        <div class="floating-icon">
-                                            <svg
-                                                width="40"
-                                                height="40"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="1.5"
-                                            >
-                                                <rect
-                                                    x="2"
-                                                    y="3"
-                                                    width="20"
-                                                    height="14"
-                                                    rx="2"
-                                                    ry="2"
-                                                />
-                                                <line
-                                                    x1="8"
-                                                    y1="21"
-                                                    x2="16"
-                                                    y2="21"
-                                                />
-                                                <line
-                                                    x1="12"
-                                                    y1="17"
-                                                    x2="12"
-                                                    y2="21"
-                                                />
-                                            </svg>
-                                        </div>
+                                        <div class="floating-icon">🖥️</div>
                                     </div>
                                     <div class="card-content">
                                         <div class="card-header">
                                             <h3>Desktop App</h3>
                                         </div>
                                         <p class="card-description">
-                                            Native desktop notifications for macOS, Linux, and Windows.
+                                            Menubar app with sound notifications. Honks when blocking, jets when advancing. Works everywhere.
                                         </p>
-                                        <a
-                                            href="https://github.com/codeGROOVE-dev/goose"
-                                            target="_blank"
-                                            rel="noopener"
-                                            class="action-button secondary"
-                                        >
-                                            <svg
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
+                                        <div class="platform-badges">
+                                            <span class="platform-badge">🍎 macOS</span>
+                                            <span class="platform-badge">🐧 Linux</span>
+                                            <span class="platform-badge">🪟 Windows</span>
+                                            <span class="platform-badge">😈 FreeBSD</span>
+                                        </div>
+                                        <div class="card-actions">
+                                            <a
+                                                href="https://docs.codegroove.dev/reviewgoose/goose/"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button primary"
                                             >
-                                                <path
-                                                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
-                                                />
-                                            </svg>
-                                            View on GitHub
-                                        </a>
+                                                Install
+                                            </a>
+                                            <a
+                                                href="https://github.com/codeGROOVE-dev/goose"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button secondary"
+                                            >
+                                                Source
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Command Line Tool Card -->
                                 <div class="notification-card cli-card">
                                     <div class="card-decoration">
-                                        <div class="floating-icon">
-                                            <svg
-                                                width="40"
-                                                height="40"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="1.5"
-                                            >
-                                                <rect
-                                                    x="2"
-                                                    y="4"
-                                                    width="20"
-                                                    height="16"
-                                                    rx="2"
-                                                />
-                                                <path d="M6 8l4 4-4 4" />
-                                                <path d="M12 16h6" />
-                                            </svg>
-                                        </div>
+                                        <div class="floating-icon">⌨️</div>
                                     </div>
                                     <div class="card-content">
                                         <div class="card-header">
-                                            <h3>Command Line Tool</h3>
+                                            <h3>CLI Tool</h3>
                                         </div>
                                         <p class="card-description">
-                                            Perfect for embedded displays, terminals, and tmux. Includes watch mode for continuous monitoring.
+                                            Shows only PRs waiting for you. Watch mode for live updates. Perfect for tmux, terminals, and embedded displays.
                                         </p>
-                                        <a
-                                            href="https://github.com/codeGROOVE-dev/prs"
-                                            target="_blank"
-                                            rel="noopener"
-                                            class="action-button secondary"
-                                        >
-                                            <svg
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                            >
-                                                <path
-                                                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
-                                                />
-                                            </svg>
-                                            View on GitHub
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <!-- Browser Extension Card -->
-                                <div class="notification-card coming-soon-card">
-                                    <div class="card-decoration">
-                                        <div class="floating-icon">
-                                            <svg
-                                                width="40"
-                                                height="40"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="1.5"
-                                            >
-                                                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                                                <line x1="12" y1="22.08" x2="12" y2="12"/>
-                                            </svg>
+                                        <div class="feature-grid">
+                                            <div class="feature-item">🎯 Blocking detection</div>
+                                            <div class="feature-item">👀 Watch mode</div>
+                                            <div class="feature-item">🔗 Clickable links</div>
+                                            <div class="feature-item">⚡ Real-time</div>
                                         </div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="card-header">
-                                            <h3>Browser Extension</h3>
-                                            <span class="badge-dev">IN DEVELOPMENT</span>
-                                        </div>
-                                        <p class="card-description">
-                                            Get notified about PRs without leaving your browser.
-                                        </p>
-                                        <div class="coming-soon-list">
-                                            <div class="coming-item">
-                                                <span class="coming-icon">🦊</span>
-                                                <span>Firefox</span>
-                                            </div>
-                                            <div class="coming-item">
-                                                <span class="coming-icon">🌐</span>
-                                                <span>Chrome</span>
-                                            </div>
+                                        <div class="card-actions">
+                                            <a
+                                                href="https://docs.codegroove.dev/reviewgoose/cli/"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button primary"
+                                            >
+                                                Install
+                                            </a>
+                                            <a
+                                                href="https://github.com/codeGROOVE-dev/prs"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="action-button secondary"
+                                            >
+                                                Source
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

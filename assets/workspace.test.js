@@ -74,7 +74,7 @@ function createWorkspaceModule() {
 
     if (parts.length >= 3) {
       const subdomain = parts[0];
-      if (["www", "dash", "api", "login", "auth-callback"].includes(subdomain)) {
+      if (["www", "dash", "api", "login", "auth-callback", "my"].includes(subdomain)) {
         return null;
       }
       return subdomain;
@@ -197,6 +197,12 @@ describe("Workspace Module", () => {
 
     it("should return null for www subdomain", () => {
       setupMocks("www.reviewGOOSE.dev");
+      Workspace = createWorkspaceModule();
+      assert.strictEqual(Workspace.currentWorkspace(), null);
+    });
+
+    it("should return null for my subdomain (personal workspace)", () => {
+      setupMocks("my.reviewGOOSE.dev");
       Workspace = createWorkspaceModule();
       assert.strictEqual(Workspace.currentWorkspace(), null);
     });
