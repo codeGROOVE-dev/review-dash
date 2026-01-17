@@ -454,6 +454,18 @@ func serveStaticFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Redirect base domain frontpage to codegroove.dev
+	currentHost := r.Header.Get("X-Original-Host")
+	if currentHost == "" {
+		currentHost = r.Host
+	}
+
+	// Check if this is the base domain (not a subdomain) and the frontpage
+	if strings.EqualFold(currentHost, baseDomain) && (r.URL.Path == "/" || r.URL.Path == "") {
+		http.Redirect(w, r, "https://codegroove.dev/reviewgoose/", http.StatusFound)
+		return
+	}
+
 	// CORS: Allow subdomains to load assets from naked domain
 	// Check Origin header and allow all subdomains of reviewGOOSE.dev
 	origin := r.Header.Get("Origin")
@@ -593,8 +605,18 @@ func validateReturnToURL(returnTo string) string {
 		parts := strings.Split(host, ".")
 		if len(parts) >= 3 {
 			subdomain := parts[0]
+			// Reserved subdomains that don't need GitHub handle validation
+			reservedSubdomains := []string{"www", "dash", "api", "login", "auth-callback", "my"}
+			isReserved := false
+			for _, reserved := range reservedSubdomains {
+				if strings.EqualFold(subdomain, reserved) {
+					isReserved = true
+					break
+				}
+			}
 			// Validate subdomain is a valid GitHub handle (prevents punycode, homograph attacks, etc.)
-			if !isValidGitHubHandle(subdomain) {
+			// unless it's a reserved subdomain
+			if !isReserved && !isValidGitHubHandle(subdomain) {
 				log.Printf("[SECURITY] Invalid GitHub handle in return_to subdomain: %s", subdomain)
 				return ""
 			}
@@ -848,10 +870,10 @@ func handleOAuthCallback(w http.ResponseWriter, r *http.Request) {
 		scheme = "https"
 	}
 
-	// Validate and use return_to URL, or default to base domain
+	// Validate and use return_to URL, or default to personal workspace (my subdomain)
 	redirectURL := validateReturnToURL(returnTo)
 	if redirectURL == "" {
-		redirectURL = fmt.Sprintf("%s://%s", scheme, baseDomain)
+		redirectURL = fmt.Sprintf("%s://my.%s", scheme, baseDomain)
 	}
 
 	// Create one-time auth code for secure token transfer

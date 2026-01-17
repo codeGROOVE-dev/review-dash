@@ -24,8 +24,8 @@ export const Workspace = (() => {
     // If subdomain exists and it's not a reserved one
     if (parts.length >= 3) {
       const subdomain = parts[0];
-      if (["www", "dash", "api", "login", "auth-callback"].includes(subdomain)) {
-        return null; // Base domain
+      if (["www", "dash", "api", "login", "auth-callback", "my"].includes(subdomain)) {
+        return null; // Personal workspace (base domain or my subdomain)
       }
       return subdomain;
     }
@@ -148,8 +148,8 @@ export const Workspace = (() => {
 
     let newHostname;
     if (org === "" || org === "Personal" || org === null) {
-      // Personal workspace - no subdomain
-      newHostname = BASE_DOMAIN;
+      // Personal workspace - use "my" subdomain
+      newHostname = `my.${BASE_DOMAIN}`;
     } else {
       // Org workspace - use org as subdomain
       newHostname = `${org}.${BASE_DOMAIN}`;
